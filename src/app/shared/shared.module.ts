@@ -14,6 +14,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { SpinnerComponent } from './spinner/spinner.component';
 
 const components = [
   ShellComponent, DeleteButtonComponent
@@ -38,14 +39,16 @@ const modules = [
 
 @NgModule({
   declarations: [
-    ...components
+    ...components,
+    SpinnerComponent
   ],
   imports: [
     ...modules,
   ],
-  exports: [
-    ...components,
-    ...modules
-  ],
+    exports: [
+        ...components,
+        ...modules,
+        SpinnerComponent
+    ],
 })
 export class SharedModule {}

@@ -1,0 +1,50 @@
+:host {
+  text-align: center;
+  padding: 24px;
+}
+
+mat-nav-list {
+  max-width: 600px;
+  background-color: #212121;
+  padding: 0;
+  margin: 0 auto;
+}
+
+mat-list-item {
+
+  transition: transform 300ms ease;
+
+  &:hover {
+    transform: translateY(-3px);
+  }
+
+  transition: transform 300ms ease;
+}
+
+.left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+
+.center {
+  flex: 0 1 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.avatar {
+  width: 1.75em;
+  border-radius: 50%;
+  margin: 0 10px 5px;
+}
