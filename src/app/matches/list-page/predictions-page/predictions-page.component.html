@@ -1,7 +1,7 @@
-<div fxLayout="column" fxLayoutAlign="space-around center">
-  <div class="container" fxLayout="row wrap" fxLayoutAlign="space-around center">
+<div fxLayout="column" fxLayoutAlign="space-around center" style="padding: 1rem">
+  <div class="container" fxLayout="row wrap" fxLayoutAlign.lt-md="center center" fxLayoutAlign="space-between center">
     <div class="item" cdkDropList fxFlex.lt-md="60%" fxFlex.gt-lg="22%" fxFlex="40%" *ngFor="let standing of standings"
-         (cdkDropListDropped)="drop($event, standing)">
+         (cdkDropListDropped)="onDrop($event, standing)">
       <mat-label>{{standing[0].group}}</mat-label>
       <div class="example-box" *ngFor="let team of standing; let index = index" cdkDrag>
         <img class="avatar" [src]="team.logo" alt="Desc 1">
@@ -11,5 +11,7 @@
       </div>
     </div>
   </div>
-  <button mat-raised-button color="primary" [disabled]="!isDirty" (click)="onSubmit()">Submit</button>
+  <app-tournament-bracket *ngIf="standings && matches" style="width: 100%" [matches]="matches"></app-tournament-bracket>
+  <button mat-raised-button color="primary" [disabled]="!isDirty || !isAllMatchesFilled()" (click)="onSubmit()">Submit
+  </button>
 </div>

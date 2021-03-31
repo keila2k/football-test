@@ -8,17 +8,26 @@ import { PredictionsPageComponent } from './list-page/predictions-page/predictio
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {FlexModule} from '@angular/flex-layout';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
+import {MatSelectModule} from '@angular/material/select';
+import { TournamentBracketComponent } from './tournament-bracket/tournament-bracket.component';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import { TeamComponent } from './team/team.component';
+import { MatchupComponent } from './matchup/matchup.component';
+import {FormsModule} from '@angular/forms';
 
 
 @NgModule({
-  declarations: [ListPageComponent, PredictionsPageComponent],
+  declarations: [ListPageComponent, PredictionsPageComponent, TournamentBracketComponent, TeamComponent, MatchupComponent, MatchupComponent],
   imports: [
     CommonModule,
     SharedModule,
     MatchesRoutingModule,
     DragDropModule,
     FlexModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    MatSelectModule,
+    MatButtonToggleModule,
+    FormsModule
   ]
 })
 export class MatchesModule { }

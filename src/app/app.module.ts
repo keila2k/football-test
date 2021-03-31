@@ -20,6 +20,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 import {CustomHttpInterceptor} from './interceptors/CustomHttpInterceptor';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {MatSelectModule} from '@angular/material/select';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
     HttpClientModule,
     FlexLayoutModule,
     FontAwesomeModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatSelectModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: CustomHttpInterceptor, multi: true}

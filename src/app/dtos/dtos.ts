@@ -45,19 +45,19 @@ export interface FixtureTeam {
   logo?: string;
 }
 
-export interface Team {
-  team_id?: number
-  name?: string
-  code?: string
-  logo?: string
-  country?: string
-  is_national?: boolean
-  founded?: number
-  venue_name?: string
-  venue_surface?: string
-  venue_address?: string
-  venue_city?: string
-  venue_capacity?: number
+export class Team {
+  team_id?: number;
+  name?: string;
+  code?: string;
+  logo?: string;
+  country?: string;
+  is_national?: boolean;
+  founded?: number;
+  venue_name?: string;
+  venue_surface?: string;
+  venue_address?: string;
+  venue_city?: string;
+  venue_capacity?: number;
 }
 
 export interface League {
@@ -83,7 +83,7 @@ export interface Statistics {
   goalsAgainst: number;
 }
 
-export interface Standing {
+export class Standing {
   rank: number;
   team_id: number;
   teamName: string;
@@ -104,4 +104,28 @@ export interface UserPredictionDTO {
   id?: string;
   standings: Standing[];
   uid: string
+}
+
+export interface LeagueDTO {
+  id?: string;
+  standings: Standing[];
+}
+
+export class Match {
+  team1: Team | Standing;
+  team2: Team | Standing;
+  idx: number;
+  selectedTeam: Team | Standing;
+
+  constructor(team1: Team | Standing, team2: Team | Standing, idx: number) {
+    this.team1 = team1;
+    this.team2 = team2;
+    this.idx = idx;
+    this.selectedTeam = undefined;
+  }
+
+  clear(teamIndexInNextMatch: number) {
+    teamIndexInNextMatch === 0 ? this.team1 = undefined : this.team2 = undefined;
+    this.selectedTeam = undefined;
+  }
 }

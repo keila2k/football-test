@@ -1,12 +1,22 @@
 import {Injectable} from '@angular/core';
-import {AngularFirestore} from '@angular/fire/firestore';
-import {Observable, of} from 'rxjs';
+import {AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument} from '@angular/fire/firestore';
+import {Observable, of, Subscription} from 'rxjs';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {Coordinate, FixtureAPI, Standing, StandingAPI, TeamAPI, UserPredictionDTO} from '../dtos/dtos';
+import {
+  Coordinate,
+  FixtureAPI,
+  League,
+  LeagueDTO,
+  Standing,
+  StandingAPI,
+  TeamAPI,
+  UserPredictionDTO
+} from '../dtos/dtos';
 import {UserService} from '../services/user.service';
-import {switchMap} from 'rxjs/operators';
+import {map, switchMap} from 'rxjs/operators';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {User} from 'firebase';
+import {flatten} from 'lodash-es';
 
 const headers: HttpHeaders = new HttpHeaders()
   .append('x-rapidapi-key', '72726afda1mshfbbf8862397b8f0p1ca5c0jsn6ea4c8720eac')
@@ -22,13 +32,17 @@ export class MatchDataService {
 
   matches = null;
   subscription;
-  private url = `https://api-football-v1.p.rapidapi.com/v2`;
+
+  // private url = `https://api-football-v1.p.rapidapi.com/v2`;
+  private leaguesCollections: AngularFirestoreCollection<LeagueDTO[]>;
 
   constructor(private afAuth: AngularFireAuth, private db: AngularFirestore, private http: HttpClient, private userService: UserService) {
+    this.leaguesCollections = this.db.collection('leagues');
   }
 
   subscribeToMatches(): Promise<Coordinate<FixtureAPI>> {
-    return this.http.get(`${this.url}/fixtures/league/${leagueId}`, {headers}).toPromise();
+    return  null;
+    // return this.http.get(`${this.url}/fixtures/league/${leagueId}`, {headers}).toPromise();
 
   }
 
@@ -50,11 +64,19 @@ export class MatchDataService {
   }
 
   getAllTeams(): Promise<Coordinate<TeamAPI>> {
-    return this.http.get(`${this.url}/teams/league/${leagueId}`, {headers}).toPromise();
+    return null;
+    // return this.http.get(`${this.url}/teams/league/${leagueId}`, {headers}).toPromise();
   }
 
-  getStandings(): Promise<Coordinate<StandingAPI>> {
-    return this.http.get(`${this.url}/leagueTable/${leagueId}`, {headers}).toPromise();
+  getStandings(): Observable<LeagueDTO> {
+    return this.leaguesCollections.doc<LeagueDTO>('1')
+      .snapshotChanges()
+      .pipe(
+        map(changes => {
+          const data = changes.payload.data();
+          const id = changes.payload.id;
+          return {id, ...data} as LeagueDTO;
+        }));
   }
 
   getUserPredictions(): Observable<UserPredictionDTO[]> {
