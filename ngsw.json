@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1617392904137,
+  "timestamp": 1617394021312,
   "index": "https://keila2k.github.io/football-test/index.html",
   "assetGroups": [
     {
@@ -16,8 +16,8 @@
         "https://keila2k.github.io/football-test/7-es5.fdad42709d5227b2c9bc.js",
         "https://keila2k.github.io/football-test/favicon.ico",
         "https://keila2k.github.io/football-test/index.html",
-        "https://keila2k.github.io/football-test/main-es2015.0c273e142398bff92f3f.js",
-        "https://keila2k.github.io/football-test/main-es5.0c273e142398bff92f3f.js",
+        "https://keila2k.github.io/football-test/main-es2015.5e9b462eae8fd64a1675.js",
+        "https://keila2k.github.io/football-test/main-es5.5e9b462eae8fd64a1675.js",
         "https://keila2k.github.io/football-test/manifest.webmanifest",
         "https://keila2k.github.io/football-test/polyfills-es2015.2b532bd8220dbc37bb1c.js",
         "https://keila2k.github.io/football-test/polyfills-es5.a0bf9afcb1a917a73a1b.js",
@@ -77,9 +77,9 @@
     "https://keila2k.github.io/football-test/fontawesome-webfont.af7ae505a9eed503f8b8.woff2": "d6f48cba7d076fb6f2fd6ba993a75b9dc1ecbf0c",
     "https://keila2k.github.io/football-test/fontawesome-webfont.b06871f281fee6b241d6.ttf": "13b1eab65a983c7a73bc7997c479d66943f7c6cb",
     "https://keila2k.github.io/football-test/fontawesome-webfont.fee66e712a8a08eef580.woff": "28b782240b3e76db824e12c02754a9731a167527",
-    "https://keila2k.github.io/football-test/index.html": "dfc882870e906623cbfca5a47f95e8df066faa36",
-    "https://keila2k.github.io/football-test/main-es2015.0c273e142398bff92f3f.js": "968c2a8ef64d25b9ed19a8c889daf731910ae115",
-    "https://keila2k.github.io/football-test/main-es5.0c273e142398bff92f3f.js": "18b31cdde66b4f7674fcec4ea77a740c4ef57a49",
+    "https://keila2k.github.io/football-test/index.html": "05c7bf1e53473be2d1285309993a779e4dfa25a4",
+    "https://keila2k.github.io/football-test/main-es2015.5e9b462eae8fd64a1675.js": "e0079c4afd0282b179f4001365391bb10ed52a49",
+    "https://keila2k.github.io/football-test/main-es5.5e9b462eae8fd64a1675.js": "1e62c99a1af899977a01ab9091594d59afdc5aa5",
     "https://keila2k.github.io/football-test/manifest.webmanifest": "72c881a5674f41140262ab771303ba77ab38b811",
     "https://keila2k.github.io/football-test/polyfills-es2015.2b532bd8220dbc37bb1c.js": "6816720a92ee443beb3c45d6e3965ab6be95e184",
     "https://keila2k.github.io/football-test/polyfills-es5.a0bf9afcb1a917a73a1b.js": "deebb97496f9056d2f1c00a4c7e73236ab73f750",
