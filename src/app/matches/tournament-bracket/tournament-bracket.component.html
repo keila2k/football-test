@@ -4,13 +4,13 @@
     <h3>Quarter-Finals</h3>
     <h3>Semi-Finals</h3>
     <h3>Final</h3>
-    <h3>Winner</h3>
   </div>
 
   <div class="tournament-brackets">
     <ul class="bracket bracket-1">
       <li class="team-item" *ngFor="let match of matches | slice: 7: 15;">
-        <app-matchup [team1]="match.team1" [team2]="match.team2" [selectedTeam]="match.selectedTeam" (teamSelect)="onTeamSelect($event, match.idx)"></app-matchup>
+        <app-matchup [team1]="match.team1" [team2]="match.team2" [selectedTeam]="match.selectedTeam"
+                     (teamSelect)="onTeamSelect($event, match.idx)"></app-matchup>
       </li>
     </ul>
     <ul class="bracket bracket-2">
@@ -29,12 +29,6 @@
       <li class="team-item" *ngFor="let match of matches | slice: 0: 1">
         <app-matchup [team1]="match.team1" [team2]="match.team2" [selectedTeam]="match.selectedTeam"
                      (teamSelect)="onTeamSelect($event, match.idx)"></app-matchup>
-      </li>
-    </ul>
-
-    <ul class="bracket bracket-5">
-      <li class="team-item">
-        <app-team [team]="matches[0].selectedTeam"></app-team>
       </li>
     </ul>
   </div>

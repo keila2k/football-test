@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Input, Output} from '@angular/core';
 import {Standing, Team} from '../../dtos/dtos';
 import {MatButtonToggleChange} from '@angular/material/button-toggle';
 
@@ -7,11 +7,10 @@ import {MatButtonToggleChange} from '@angular/material/button-toggle';
   template: `
     <mat-button-toggle-group [disabled]="!(team1 && team2)" (change)="onTeamSelect($event)" ngDefaultControl
                              [(ngModel)]="selectedTeam">
-      <mat-button-toggle [value]="team1">
+      <mat-button-toggle class="m-5" [value]="team1">
         <app-team [team]="team1"></app-team>
       </mat-button-toggle>
-      -
-      <mat-button-toggle [value]="team2">
+      <mat-button-toggle class="m-5" [value]="team2">
         <app-team [team]="team2"></app-team>
       </mat-button-toggle>
     </mat-button-toggle-group>`,
@@ -30,13 +29,14 @@ import {MatButtonToggleChange} from '@angular/material/button-toggle';
       background-color: #48915b;
     }
 
-    .mat-button-toggle-label-content {
-      line-height: 30px !important;
+    .m-5 {
+      margin: 5px 0;
     }
+
   `
   ]
 })
-export class MatchupComponent {
+export class MatchupComponent implements AfterViewInit {
   @Input() team1: Standing | Team;
   @Input() team2: Standing | Team;
   @Input() selectedTeam: Standing | Team;
@@ -44,5 +44,11 @@ export class MatchupComponent {
 
   onTeamSelect($event: MatButtonToggleChange) {
     this.teamSelect.emit($event.value);
+  }
+
+  ngAfterViewInit(): void {
+    if (this.selectedTeam && this.team1 && this.team2) {
+      this.selectedTeam = this.selectedTeam.team_id === this.team1.team_id ? this.team1 : this.team2;
+    }
   }
 }

@@ -1,0 +1,12 @@
+<div class="container" fxLayout="row wrap" fxLayoutAlign.lt-md="center center" fxLayoutAlign="space-between center">
+  <div class="item" cdkDropList fxFlex.lt-md="60%" fxFlex.gt-lg="22%" fxFlex="40%" *ngFor="let standing of standings"
+       (cdkDropListDropped)="onDrop($event, standing)">
+    <mat-label>{{standing[0].group}}</mat-label>
+    <div class="example-box" *ngFor="let team of standing; let index = index" cdkDrag>
+      <img class="avatar" [src]="team.logo" alt="Desc 1">
+      <mat-label>{{team.teamName}}</mat-label>
+      <i *ngIf="!isDirty && isEditMode() && team.rank === index + 1" class="fa fa-check-circle green right"></i>
+      <i *ngIf="!isDirty && isEditMode() && team.rank !== index + 1" class="fa fa-times-circle red right"></i>
+    </div>
+  </div>
+</div>

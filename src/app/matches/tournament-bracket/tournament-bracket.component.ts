@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {Match, Standing} from '../../dtos/dtos';
 
 @Component({
@@ -7,14 +7,15 @@ import {Match, Standing} from '../../dtos/dtos';
   styleUrls: ['./tournament-bracket.component.scss']
 })
 export class TournamentBracketComponent {
-  @Input() matches: Match[];
+  @Input() matches: Match[] = [];
+  @Output() teamSelect: EventEmitter<Standing> = new EventEmitter();
 
   onTeamSelect(selectedTeam: Standing, index: number) {
     if (index >= 0) {
       this.updateCurrentMatch(index, selectedTeam);
       this.updateParentMatch(index, selectedTeam);
       this.clearOtherParentMatches(index);
-
+      this.teamSelect.emit(selectedTeam);
     }
   }
 
@@ -48,9 +49,5 @@ export class TournamentBracketComponent {
       this.matches[i].clear(teamIndexInNextMatch);
       teamIndexInNextMatch = this.getTeamIndexInNextMatch(i);
     }
-  }
-
-  private getChildIndex(index: number): number[] {
-    return [2 * index + 1, 2 * index + 2];
   }
 }

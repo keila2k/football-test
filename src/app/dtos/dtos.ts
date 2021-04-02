@@ -58,6 +58,7 @@ export class Team {
   venue_address?: string;
   venue_city?: string;
   venue_capacity?: number;
+  shortName?: string;
 }
 
 export interface League {
@@ -98,11 +99,13 @@ export class Standing {
   goalsDiff: number;
   points: number;
   lastUpdate: string;
+  shortName: string;
 }
 
 export interface UserPredictionDTO {
   id?: string;
   standings: Standing[];
+  matches: Match[];
   uid: string
 }
 
@@ -117,11 +120,11 @@ export class Match {
   idx: number;
   selectedTeam: Team | Standing;
 
-  constructor(team1: Team | Standing, team2: Team | Standing, idx: number) {
+  constructor(team1: Team | Standing, team2: Team | Standing, idx: number, selectedTeam?: Team | Standing) {
     this.team1 = team1;
     this.team2 = team2;
     this.idx = idx;
-    this.selectedTeam = undefined;
+    this.selectedTeam = selectedTeam;
   }
 
   clear(teamIndexInNextMatch: number) {

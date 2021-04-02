@@ -1,11 +1,19 @@
-import {Component, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {MatchDataService} from '../../match-data.service';
-import {LeagueDTO, Match, Standing, StandingAPI, Team} from '../../../dtos/dtos';
-import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
-import groupBy from 'lodash-es/groupBy';
+import {LeagueDTO, Match, Standing, UserPredictionDTO} from '../../../dtos/dtos';
+import {moveItemInArray} from '@angular/cdk/drag-drop';
 import flatten from 'lodash-es/flatten';
+import map from 'lodash-es/map';
 import every from 'lodash-es/every';
 import {MODE} from '../../../utils/mode';
+import {StepperSelectionEvent} from '@angular/cdk/stepper';
+import {FormControl} from '@angular/forms';
+import {MatchUtils} from '../../../utils/MatchUtils';
+import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
+
+const SNACK_BAR_CONFIG: MatSnackBarConfig = {
+  duration: 5 * 1000,
+};
 
 @Component({
   selector: 'app-predictions-page',
@@ -13,95 +21,114 @@ import {MODE} from '../../../utils/mode';
   styleUrls: ['./predictions-page.component.scss']
 })
 export class PredictionsPageComponent implements OnInit {
-  teams: Team[];
   standings: Array<Standing[]>;
-  isDirty: boolean;
+  groupStageFormController: FormControl = new FormControl('');
+  knockoutStageFormController: FormControl = new FormControl('');
   mode: MODE;
   private standingsId: string;
   matches: Match[];
 
-  constructor(private matchDataService: MatchDataService) {
+  constructor(private matchDataService: MatchDataService, private _snackBar: MatSnackBar) {
+    this.setState(this.groupStageFormController, false);
+    this.setState(this.knockoutStageFormController, true);
   }
 
   ngOnInit() {
     this.matchDataService.getUserPredictions().subscribe(userPredictionsDTO => {
       if (userPredictionsDTO?.length > 0) {
-        this.standingsId = userPredictionsDTO[0].id;
-        this.standings = this.getStandings(userPredictionsDTO[0].standings);
-        this.matches = this.getMatches(this.standings);
-        this.mode = MODE.EDIT;
+        this.getUserPredictions(userPredictionsDTO);
+        this.enableEditMode();
       } else {
-        this.matchDataService.getStandings().subscribe((value: LeagueDTO) => {
-          this.standings = this.getStandings(value.standings);
-          this.matches = this.getMatches(this.standings);
-          this.mode = MODE.NEW;
-        });
+        this.getNewPredictions();
       }
     });
   }
 
-  private getStandings(standings: Standing[]): Array<Standing[]> {
-    return Object.values(groupBy(standings, (standing: Standing) => standing.group));
-  }
-
-  onDrop(event: CdkDragDrop<string[]>, standing: Standing[]) {
-    this.isDirty = true;
+  // =============================  Groups stage =============================
+  onGroupStandingsChange({event, standing}) {
+    this.groupStageFormController.markAsDirty();
+    this.setState(this.knockoutStageFormController, true);
     moveItemInArray(standing, event.previousIndex, event.currentIndex);
-    this.matches = this.getMatches(this.standings);
   }
 
-  private getMatches(standings: Array<Standing[]>): Match[] {
-    const array: Match[] = new Array(15);
-    array[0] = new Match(null, null, 0);
-    array[1] = new Match(null, null, 1);
-    array[2] = new Match(null, null, 2);
-    array[3] = new Match(null, null, 3);
-    array[4] = new Match(null, null, 4);
-    array[5] = new Match(null, null, 5);
-    array[6] = new Match(null, null, 6);
-    array[7] = new Match(standings[0][0], standings[5][1], 7);
-    array[8] = new Match(standings[7][0], standings[6][1], 8);
-    array[9] = new Match(standings[2][0], standings[1][1], 9);
-    array[10] = new Match(standings[5][0], standings[4][1], 10);
-    array[11] = new Match(standings[1][0], standings[3][1], 11);
-    array[12] = new Match(standings[3][0], standings[7][1], 12);
-    array[13] = new Match(standings[6][0], standings[2][1], 13);
-    array[14] = new Match(standings[4][0], standings[0][1], 14);
-    return array;
+  // ============================= Knockouts stage =============================
+
+  onKnockoutTeamSelect($event: Standing) {
+    this.knockoutStageFormController.markAsDirty();
+    this.setState(this.knockoutStageFormController, !this.isAllMatchesFilled());
   }
 
-  onSubmit() {
-    const standings: Standing[] = flatten(this.standings);
-    if (this.isNewMode()) {
-      this.matchDataService.addUserPredictions(standings).subscribe(value => {
-        this.onSubmitSucceed();
-      });
+  isAllMatchesFilled() {
+    return every(this.matches, match => match.selectedTeam !== undefined);
+  }
+
+  // ============================= General =============================
+
+  setState(control: FormControl, state: boolean) {
+    if (state) {
+      control.setErrors({required: true});
     } else {
-      this.matchDataService.updateUserPredictions(standings, this.standingsId).subscribe(value => {
-        this.onSubmitSucceed();
-      });
+      control.reset();
     }
   }
 
-  private onSubmitSucceed() {
-    this.isDirty = false;
-    this.mode = MODE.EDIT;
-  }
-
-  isEditMode() {
-    return this.mode === MODE.EDIT;
+  onSelectionChange(event: StepperSelectionEvent) {
+    if (event.selectedIndex === 1 && this.groupStageFormController.dirty) {
+      this.groupStageFormController.reset();
+      this.matches = MatchUtils.getMatches(this.standings);
+    }
   }
 
   isNewMode() {
     return this.mode === MODE.NEW;
   }
 
-  getOptions(): Standing[] {
-    return flatten(this.standings);
+  isEditMode() {
+    return this.mode === MODE.EDIT;
   }
 
-  isAllMatchesFilled() {
-    return every(this.matches, match => match.selectedTeam !== undefined);
+  private enableEditMode() {
+    this.mode = MODE.EDIT;
+    this.setState(this.groupStageFormController, false);
+    this.setState(this.knockoutStageFormController, true);
+  }
 
+  private getUserPredictions(userPredictionsDTO: UserPredictionDTO[]) {
+    this.standingsId = userPredictionsDTO[0].id;
+    this.standings = MatchUtils.getStandings(userPredictionsDTO[0].standings);
+    this.matches = map(userPredictionsDTO[0].matches, match => new Match(match.team1, match.team2, match.idx, match.selectedTeam));
+  }
+
+  private getNewPredictions() {
+    this.matchDataService.getStandings().subscribe((value: LeagueDTO) => {
+      this.standings = MatchUtils.getStandings(value.standings);
+      this.matches = MatchUtils.getMatches(this.standings);
+      this.mode = MODE.NEW;
+    });
+  }
+
+  onSubmit() {
+    const standings: Standing[] = flatten(this.standings);
+    if (this.isNewMode()) {
+      this.matchDataService.addUserPredictions(standings, this.matches).subscribe(value => {
+        this.onSubmitSucceed();
+      });
+    } else {
+      this.matchDataService.updateUserPredictions(standings, this.matches, this.standingsId).subscribe(value => {
+        this.onSubmitSucceed();
+      });
+    }
+  }
+
+  private onSubmitSucceed() {
+    this.openSnackBar();
+    this.groupStageFormController.reset();
+    this.knockoutStageFormController.reset();
+    this.enableEditMode();
+
+  }
+
+  openSnackBar() {
+    this._snackBar.open(`${this.isEditMode() ? 'Updated' : 'Created'} successfully`, 'close', SNACK_BAR_CONFIG);
   }
 }

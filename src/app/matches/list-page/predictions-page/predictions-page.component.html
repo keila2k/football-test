@@ -1,17 +1,24 @@
-<div fxLayout="column" fxLayoutAlign="space-around center" style="padding: 1rem">
-  <div class="container" fxLayout="row wrap" fxLayoutAlign.lt-md="center center" fxLayoutAlign="space-between center">
-    <div class="item" cdkDropList fxFlex.lt-md="60%" fxFlex.gt-lg="22%" fxFlex="40%" *ngFor="let standing of standings"
-         (cdkDropListDropped)="onDrop($event, standing)">
-      <mat-label>{{standing[0].group}}</mat-label>
-      <div class="example-box" *ngFor="let team of standing; let index = index" cdkDrag>
-        <img class="avatar" [src]="team.logo" alt="Desc 1">
-        <mat-label>{{team.teamName}}</mat-label>
-        <i *ngIf="!isDirty && isEditMode() && team.rank === index + 1" class="fa fa-check-circle green right"></i>
-        <i *ngIf="!isDirty && isEditMode() && team.rank !== index + 1" class="fa fa-times-circle red right"></i>
-      </div>
+<mat-horizontal-stepper (selectionChange)="onSelectionChange($event)" [linear]="true" #stepper>
+  <mat-step [stepControl]="groupStageFormController">
+    <ng-template matStepLabel>Groups stage</ng-template>
+    <app-groups-stage [standings]="standings" (standingsChange)=onGroupStandingsChange($event) [mode]=mode
+                      [isDirty]=groupStageFormController.dirty>
+    </app-groups-stage>
+    <div fxLayoutAlign="center center">
+      <button mat-raised-button color="primary" [disabled]="!groupStageFormController.valid" matStepperNext>Next
+      </button>
     </div>
-  </div>
-  <app-tournament-bracket *ngIf="standings && matches" style="width: 100%" [matches]="matches"></app-tournament-bracket>
-  <button mat-raised-button color="primary" [disabled]="!isDirty || !isAllMatchesFilled()" (click)="onSubmit()">Submit
-  </button>
-</div>
+  </mat-step>
+  <mat-step [stepControl]="knockoutStageFormController">
+    <ng-template matStepLabel>Knockouts</ng-template>
+    <app-tournament-bracket *ngIf="standings && matches" style="width: 100%" [matches]="matches"
+                            (teamSelect)="onKnockoutTeamSelect($event)"></app-tournament-bracket>
+    <div fxLayoutAlign="center center">
+      <button class="m-5" mat-raised-button matStepperPrevious>Back</button>
+      <button class="m-5" mat-raised-button color="primary"
+              [disabled]="!knockoutStageFormController.valid" (click)="onSubmit()">
+        Submit
+      </button>
+    </div>
+  </mat-step>
+</mat-horizontal-stepper>
