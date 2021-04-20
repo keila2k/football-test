@@ -1,6 +1,6 @@
 <h1>List Page</h1>
 
-<mat-nav-list role="list">
+<!--<mat-nav-list role="list">
   <h3 mat-subheader>Customers (Fake Data)</h3>
   <mat-list-item *ngFor="let fixture of fixtures" role="listitem">
     <div class="left">
@@ -12,5 +12,16 @@
       <mat-label>{{fixture.awayTeam.team_name}}</mat-label>
       <img class="avatar"[src]="fixture.awayTeam.logo" alt="Desc 1">
     </div>
+  </mat-list-item>
+</mat-nav-list>-->
+
+<mat-nav-list role="list">
+  <h3 mat-subheader>Customers (Fake Data)</h3>
+  <mat-list-item *ngFor="let userScore of userScoreDtos" role="listitem">
+    <div class="left">
+      <img class="avatar" [src]="userScore.img" alt="Desc 1">
+      <mat-label>{{userScore.name}}</mat-label>
+    </div>
+    <mat-label class="center">{{userScore.score}}</mat-label>
   </mat-list-item>
 </mat-nav-list>

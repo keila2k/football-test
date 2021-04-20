@@ -1,98 +1,70 @@
 import {Injectable} from '@angular/core';
-import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore';
-import {Observable, of} from 'rxjs';
+import {AngularFirestore} from '@angular/fire/firestore';
+import {Observable} from 'rxjs';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {Coordinate, FixtureAPI, LeagueDTO, Match, Standing, TeamAPI, UserPredictionDTO} from '../dtos/dtos';
 import {UserService} from '../services/user.service';
-import {map, switchMap} from 'rxjs/operators';
+import {switchMap} from 'rxjs/operators';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {User} from 'firebase';
+import {StandingI} from '../dtos/StandingI';
+import {Match} from '../dtos/Match';
+import {UserPredictionDtoI} from '../dtos/UserPredictionDtoI';
+import {UserScoreDtoI} from '../dtos/UserScoreDtoI';
+import {GeneralDtoI} from '../dtos/GeneralDtoI';
+import {ePrediction} from '../dtos/ePrediction';
 
 const headers: HttpHeaders = new HttpHeaders()
   .append('x-rapidapi-key', '72726afda1mshfbbf8862397b8f0p1ca5c0jsn6ea4c8720eac')
   .append('x-rapidapi-host', 'api-football-v1.p.rapidapi.com',)
   .append('useQueryString', 'true');
 
-const leagueId = 2771;
+const API_PREFIX = 'api';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MatchDataService {
-
-  matches = null;
-  subscription;
-
-  // private url = `https://api-football-v1.p.rapidapi.com/v2`;
-  private leaguesCollections: AngularFirestoreCollection<LeagueDTO[]>;
+  private standingsUrl = `${API_PREFIX}/standings`;
+  private predictionsUrl = `${API_PREFIX}/predictions`;
+  private userScoresUrl = `${API_PREFIX}/scores`;
+  private generalUrl = `${API_PREFIX}/general`;
 
   constructor(private afAuth: AngularFireAuth, private db: AngularFirestore, private http: HttpClient, private userService: UserService) {
-    this.leaguesCollections = this.db.collection('leagues');
   }
 
-  subscribeToMatches(): Promise<Coordinate<FixtureAPI>> {
-    return null;
-    // return this.http.get(`${this.url}/fixtures/league/${leagueId}`, {headers}).toPromise();
-
+  getStandings(ePredictionState: ePrediction): Promise<StandingI[]> {
+    return this.http.get<StandingI[]>(`${this.standingsUrl}/${ePredictionState}`).toPromise();
   }
 
-  getCustomer(id: string) {
-    if (this.matches) {
-      const cached = this.matches.find(v => v.id === id);
-      console.log('use cached');
-      return of(cached);
-    } else {
-      console.log('use db');
-      return this.db.collection('matches').doc(id).valueChanges();
-    }
-
-  }
-
-  dispose() {
-    this.subscription.unsubscribe();
-    this.matches = null;
-  }
-
-  getAllTeams(): Promise<Coordinate<TeamAPI>> {
-    return null;
-    // return this.http.get(`${this.url}/teams/league/${leagueId}`, {headers}).toPromise();
-  }
-
-  getStandings(): Observable<LeagueDTO> {
-    return this.leaguesCollections.doc<LeagueDTO>('1')
-      .snapshotChanges()
-      .pipe(
-        map(changes => {
-          const data = changes.payload.data();
-          const id = changes.payload.id;
-          return {id, ...data} as LeagueDTO;
-        }));
-  }
-
-  getUserPredictions(): Observable<UserPredictionDTO[]> {
-    return this.afAuth.authState.pipe(switchMap((user: firebase.User | null) => {
-      return this.db.collection<UserPredictionDTO>('predictions', ref => ref.where('uid', '==', user?.uid))
-        .valueChanges({idField: 'id'});
-    }));
-  }
-
-  addUserPredictions(standings: Standing[], matches: Match[]) {
+  getUserPredictions(): Observable<UserPredictionDtoI> {
     return this.afAuth.authState.pipe(switchMap((user: User | null) => {
-      const matchesSimple = matches.map((obj) => {
-        return Object.assign({}, obj);
-      });
-      const userPredictionDTO: UserPredictionDTO = {standings, matches: matchesSimple, uid: user?.uid};
-      return this.db.collection('predictions').add(userPredictionDTO);
+      return this.http.get<UserPredictionDtoI>(`${this.predictionsUrl}/${user.uid}`);
     }));
   }
 
-  updateUserPredictions(standings: Standing[], matches: Match[], standingsId: string) {
+  addUserPredictions(standings: StandingI[], matches: Match[]) {
     return this.afAuth.authState.pipe(switchMap((user: User | null) => {
-      const matchesSimple = matches.map((obj) => {
-        return Object.assign({}, obj);
-      });
-      const userPredictionDTO: UserPredictionDTO = {standings, matches: matchesSimple, uid: user?.uid};
-      return this.db.collection('predictions').doc(standingsId).update({...userPredictionDTO});
+      const userPredictionDTO: UserPredictionDtoI = {standings, matches, uid: user?.uid};
+      return this.http.post(`${this.predictionsUrl}`, userPredictionDTO);
     }));
+  }
+
+  updateUserPredictions(standings: StandingI[], matches: Match[], standingsId: string) {
+    return this.afAuth.authState.pipe(switchMap((user: User | null) => {
+      const userPredictionDTO: UserPredictionDtoI = {standings, matches, uid: user?.uid};
+      return this.http.put(`${this.predictionsUrl}/${standingsId}`, userPredictionDTO);
+    }));
+  }
+
+  async getUserScores(): Promise<UserScoreDtoI[]> {
+    return this.http.get<UserScoreDtoI[]>(`${this.userScoresUrl}`).toPromise();
+  }
+
+  getGeneral(): Promise<GeneralDtoI> {
+    return this.http.get<GeneralDtoI>(`${this.generalUrl}`).toPromise();
+  }
+
+  async getInitialKnockoutMatches(): Promise<Match[]> {
+    return [];
   }
 }

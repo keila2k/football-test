@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "angular-voxer"
+    "default": "angular-voxer",
+    "staging": "football-keila",
+    "development": "football-keila"
   }
 }

@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {Standing, Team} from '../../dtos/dtos';
+import {TeamI} from '../../dtos/TeamI';
 
 @Component({
   selector: 'app-team',
@@ -10,9 +10,9 @@ import {Standing, Team} from '../../dtos/dtos';
       </ng-template>
     </span>
     <ng-template #thenBlock>
-      <img class="avatar" [src]=team.logo alt="Desc 1">
-      <mat-label class="lg-view">{{getTeamName()}}</mat-label>
-      <mat-label class="sm-view">{{team.shortName}}</mat-label>
+      <img class="avatar" [src]=team.logoUrl alt="Desc 1">
+      <mat-label class="lg-view">{{team.internationalName}}</mat-label>
+      <mat-label class="sm-view">{{team.teamCode}}</mat-label>
     </ng-template>
     <ng-template #elseBlock>
       N/A
@@ -50,14 +50,6 @@ import {Standing, Team} from '../../dtos/dtos';
   `]
 })
 export class TeamComponent {
-  @Input() team: Standing | Team;
-
-  getTeamName() {
-    if (this.team instanceof Team) {
-      return this.team.name;
-    } else {
-      return this.team.teamName;
-    }
-  }
+  @Input() team: TeamI;
 }
 

@@ -22,6 +22,12 @@ import {CustomHttpInterceptor} from './interceptors/CustomHttpInterceptor';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatSelectModule} from '@angular/material/select';
 import {MatStepperModule} from '@angular/material/stepper';
+import {
+  GoogleLoginProvider,
+  SocialLoginModule,
+  SocialAuthService,
+  SocialAuthServiceConfig
+} from 'angularx-social-login';
 
 @NgModule({
   declarations: [
@@ -43,10 +49,25 @@ import {MatStepperModule} from '@angular/material/stepper';
     FontAwesomeModule,
     MatProgressBarModule,
     MatSelectModule,
-    MatStepperModule
+    MatStepperModule,
+    SocialLoginModule
   ],
   providers: [
-    {provide: HTTP_INTERCEPTORS, useClass: CustomHttpInterceptor, multi: true}
+    {provide: HTTP_INTERCEPTORS, useClass: CustomHttpInterceptor, multi: true},
+    {
+      provide: 'SocialAuthServiceConfig',
+      useValue: {
+        autoLogin: false,
+        providers: [
+          {
+            id: GoogleLoginProvider.PROVIDER_ID,
+            provider: new GoogleLoginProvider(
+              '342236723882-vjq408e8hrbu07lrq9b4lqi8vh96bim0.apps.googleusercontent.com'
+            )
+          }
+        ]
+      } as SocialAuthServiceConfig
+    }
   ],
   bootstrap: [AppComponent]
 })

@@ -69,7 +69,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "firestarter:build"
+            "browserTarget": "firestarter:build",
+            "proxyConfig": "src/proxy.conf.json"
           },
           "configurations": {
             "production": {

@@ -45,6 +45,7 @@
     "@nestjs/ng-universal": "^3.0.0",
     "@nestjs/platform-express": "^6.11.6",
     "@nguniversal/express-engine": "^9.0.0",
+    "angularx-social-login": "^3.5.5",
     "express": "^4.15.2",
     "firebase": "7.8.1",
     "font-awesome": "^4.7.0",

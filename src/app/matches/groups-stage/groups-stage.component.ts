@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
-import {Standing} from '../../dtos/dtos';
-import {MODE} from '../../utils/mode';
+import {StandingI} from '../../dtos/StandingI';
+import {GroupItemI} from '../../dtos/GroupItemI';
 
 @Component({
   selector: 'app-groups-stage',
@@ -9,16 +9,11 @@ import {MODE} from '../../utils/mode';
   styleUrls: ['./groups-stage.component.scss']
 })
 export class GroupsStageComponent {
-  @Input() standings: Array<Standing[]> = [];
-  @Input() mode: MODE = MODE.NEW;
-  @Input() isDirty = false;
+  @Input() standings: StandingI[] = [];
+  @Input() isOver = false;
   @Output() standingsChange: EventEmitter<any> = new EventEmitter<any>();
 
-  isEditMode() {
-    return this.mode === MODE.EDIT;
-  }
-
-  onDrop(event: CdkDragDrop<any>, standing: Standing[]) {
+  onDrop(event: CdkDragDrop<any>, standing: GroupItemI[]) {
     this.standingsChange.emit({event, standing});
   }
 }

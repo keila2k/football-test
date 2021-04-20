@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, EventEmitter, Input, Output} from '@angular/core';
-import {Standing, Team} from '../../dtos/dtos';
 import {MatButtonToggleChange} from '@angular/material/button-toggle';
+import {TeamI} from '../../dtos/TeamI';
 
 @Component({
   selector: 'app-matchup',
@@ -37,10 +37,10 @@ import {MatButtonToggleChange} from '@angular/material/button-toggle';
   ]
 })
 export class MatchupComponent implements AfterViewInit {
-  @Input() team1: Standing | Team;
-  @Input() team2: Standing | Team;
-  @Input() selectedTeam: Standing | Team;
-  @Output() teamSelect: EventEmitter<Standing | Team> = new EventEmitter<Standing | Team>();
+  @Input() team1: TeamI;
+  @Input() team2: TeamI;
+  @Input() selectedTeam: TeamI;
+  @Output() teamSelect: EventEmitter<TeamI> = new EventEmitter<TeamI>();
 
   onTeamSelect($event: MatButtonToggleChange) {
     this.teamSelect.emit($event.value);
@@ -48,7 +48,7 @@ export class MatchupComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     if (this.selectedTeam && this.team1 && this.team2) {
-      this.selectedTeam = this.selectedTeam.team_id === this.team1.team_id ? this.team1 : this.team2;
+      this.selectedTeam = this.selectedTeam.internationalName === this.team1.internationalName ? this.team1 : this.team2;
     }
   }
 }

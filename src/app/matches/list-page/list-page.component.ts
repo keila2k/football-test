@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {Coordinate, Fixture, FixtureAPI} from '../../dtos/dtos';
 import {MatchDataService} from '../match-data.service';
+import {UserService} from '../../services/user.service';
+import {UserScoreDtoI} from '../../dtos/UserScoreDtoI';
 
 @Component({
   selector: 'app-list-page',
@@ -8,13 +9,17 @@ import {MatchDataService} from '../match-data.service';
   styleUrls: ['./list-page.component.scss']
 })
 export class ListPageComponent implements OnInit {
-  fixtures: Fixture[] = [];
+  userScoreDtos: UserScoreDtoI[];
 
-  constructor(public matchDataService: MatchDataService) {
+  constructor(private userService: UserService, private matchDataService: MatchDataService) {
   }
 
   async ngOnInit() {
-    const {api: {fixtures}}: Coordinate<FixtureAPI> = await this.matchDataService.subscribeToMatches();
-    this.fixtures = fixtures;
+    const userScoreDtos: UserScoreDtoI[] = await this.matchDataService.getUserScores();
+    if (userScoreDtos) {
+      this.userScoreDtos = userScoreDtos;
+    }
+    /*    const {api: {fixtures}}: Coordinate<FixtureAPI> = await this.matchDataService.subscribeToMatches();
+        this.fixtures = fixtures;*/
   }
 }
