@@ -1,0 +1,10 @@
+<h1>User scores</h1>
+<mat-nav-list role="list">
+  <mat-list-item *ngFor="let userScore of userScoreDtos" role="listitem">
+    <div class="left">
+      <img class="avatar" [src]="userScore.img" alt="Desc 1">
+      <mat-label>{{userScore.name}}</mat-label>
+    </div>
+    <mat-label class="center">{{userScore.score}}</mat-label>
+  </mat-list-item>
+</mat-nav-list>

@@ -1,14 +1,14 @@
 import {Component, OnInit} from '@angular/core';
-import {MatchDataService} from '../match-data.service';
-import {UserService} from '../../services/user.service';
 import {UserScoreDtoI} from '../../dtos/UserScoreDtoI';
+import {UserService} from '../../services/user.service';
+import {MatchDataService} from '../../predictions/matches/match-data.service';
 
 @Component({
-  selector: 'app-list-page',
-  templateUrl: './list-page.component.html',
-  styleUrls: ['./list-page.component.scss']
+  selector: 'app-score-list',
+  templateUrl: './score-list.component.html',
+  styleUrls: ['./score-list.component.scss']
 })
-export class ListPageComponent implements OnInit {
+export class ScoreListComponent implements OnInit {
   userScoreDtos: UserScoreDtoI[];
 
   constructor(private userService: UserService, private matchDataService: MatchDataService) {
@@ -19,7 +19,5 @@ export class ListPageComponent implements OnInit {
     if (userScoreDtos) {
       this.userScoreDtos = userScoreDtos;
     }
-    /*    const {api: {fixtures}}: Coordinate<FixtureAPI> = await this.matchDataService.subscribeToMatches();
-        this.fixtures = fixtures;*/
   }
 }

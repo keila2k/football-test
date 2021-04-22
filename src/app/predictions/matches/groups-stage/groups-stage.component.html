@@ -1,0 +1,22 @@
+<div class="container">
+  <h1 fxLayoutAlign="center">Standings</h1>
+  <div fxLayout="row wrap" fxLayoutAlign.lt-md="center center" fxLayoutAlign="space-between center">
+    <div class="item" cdkDropList fxFlex.lt-md="80%" fxFlex.gt-md="30%" fxFlex="30%" *ngFor="let standing of standings"
+         (cdkDropListDropped)="onGroupStandingChange($event, standing.items)">
+      <mat-label>{{standing.group.groupName}}</mat-label>
+      <div class="example-box" *ngFor="let item of standing.items; let index = index" cdkDrag
+           [cdkDragDisabled]="isGroupsStageOver">
+        <img class="avatar" [src]="item.team.logoUrl" alt="Desc 1">
+        <mat-label>{{item.team.internationalName}}</mat-label>
+        <i *ngIf="isGroupsStageOver && item.isCorrect" class="fa fa-check-circle green right"> +{{item.points}} </i>
+        <i *ngIf="isGroupsStageOver && !item.isCorrect" class="fa fa-times-circle red right"></i>
+      </div>
+    </div>
+  </div>
+  <div fxLayoutAlign="center">
+    <button class="submit-button" mat-raised-button color="primary"
+            [disabled]="!groupStageFormController.valid" (click)="onSubmit()">
+      Submit
+    </button>
+  </div>
+</div>

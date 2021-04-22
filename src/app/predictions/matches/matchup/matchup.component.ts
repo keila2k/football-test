@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, EventEmitter, Input, Output} from '@angular/core';
 import {MatButtonToggleChange} from '@angular/material/button-toggle';
-import {TeamI} from '../../dtos/TeamI';
+import {TeamI} from '../../../dtos/TeamI';
 
 @Component({
   selector: 'app-matchup',

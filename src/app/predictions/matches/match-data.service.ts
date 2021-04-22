@@ -2,16 +2,17 @@ import {Injectable} from '@angular/core';
 import {AngularFirestore} from '@angular/fire/firestore';
 import {Observable} from 'rxjs';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {UserService} from '../services/user.service';
+import {UserService} from '../../services/user.service';
 import {switchMap} from 'rxjs/operators';
 import {AngularFireAuth} from '@angular/fire/auth';
+import {StandingI} from '../../dtos/StandingI';
+import {UserPredictionDtoI} from '../../dtos/UserPredictionDtoI';
+import {UserScoreDtoI} from '../../dtos/UserScoreDtoI';
+import {GeneralDtoI} from '../../dtos/GeneralDtoI';
+import {ePrediction} from '../../dtos/ePrediction';
+import {MatchPrediction, MatchPredictionI} from '../../dtos/MatchPrediction';
 import {User} from 'firebase';
-import {StandingI} from '../dtos/StandingI';
-import {Match} from '../dtos/Match';
-import {UserPredictionDtoI} from '../dtos/UserPredictionDtoI';
-import {UserScoreDtoI} from '../dtos/UserScoreDtoI';
-import {GeneralDtoI} from '../dtos/GeneralDtoI';
-import {ePrediction} from '../dtos/ePrediction';
+import {eMatchStage} from '../../dtos/eMatchStage';
 
 const headers: HttpHeaders = new HttpHeaders()
   .append('x-rapidapi-key', '72726afda1mshfbbf8862397b8f0p1ca5c0jsn6ea4c8720eac')
@@ -28,6 +29,7 @@ export class MatchDataService {
   private predictionsUrl = `${API_PREFIX}/predictions`;
   private userScoresUrl = `${API_PREFIX}/scores`;
   private generalUrl = `${API_PREFIX}/general`;
+  private matchesUrl = `${API_PREFIX}/matches`;
 
   constructor(private afAuth: AngularFireAuth, private db: AngularFirestore, private http: HttpClient, private userService: UserService) {
   }
@@ -42,16 +44,16 @@ export class MatchDataService {
     }));
   }
 
-  addUserPredictions(standings: StandingI[], matches: Match[]) {
+  addUserPredictions(standings: StandingI[], matchScores: MatchPredictionI[], finalsMatches: MatchPredictionI[]) {
     return this.afAuth.authState.pipe(switchMap((user: User | null) => {
-      const userPredictionDTO: UserPredictionDtoI = {standings, matches, uid: user?.uid};
+      const userPredictionDTO: UserPredictionDtoI = {standings, matchScores, finalsMatches, uid: user?.uid};
       return this.http.post(`${this.predictionsUrl}`, userPredictionDTO);
     }));
   }
 
-  updateUserPredictions(standings: StandingI[], matches: Match[], standingsId: string) {
+  updateUserPredictions(standings: StandingI[], matchScores: MatchPredictionI[], finalsMatches: MatchPredictionI[], standingsId: string) {
     return this.afAuth.authState.pipe(switchMap((user: User | null) => {
-      const userPredictionDTO: UserPredictionDtoI = {standings, matches, uid: user?.uid};
+      const userPredictionDTO: UserPredictionDtoI = {standings, matchScores, finalsMatches, uid: user?.uid};
       return this.http.put(`${this.predictionsUrl}/${standingsId}`, userPredictionDTO);
     }));
   }
@@ -64,7 +66,11 @@ export class MatchDataService {
     return this.http.get<GeneralDtoI>(`${this.generalUrl}`).toPromise();
   }
 
-  async getInitialKnockoutMatches(): Promise<Match[]> {
-    return [];
+  async getFinalsMatches(ePredictionState: ePrediction): Promise<MatchPrediction[]> {
+    return this.http.get<MatchPrediction[]>(`${this.matchesUrl}/finals/${ePredictionState}`).toPromise();
+  }
+
+  async getMatches(matchStage?: eMatchStage): Promise<MatchPredictionI[]> {
+    return this.http.get<MatchPredictionI[]>(`${this.matchesUrl}${matchStage ? `/${matchStage}` : ''}`).toPromise();
   }
 }

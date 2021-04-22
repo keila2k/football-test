@@ -1,9 +1,9 @@
 .container {
-  padding-top: 1rem;
+  padding: 1rem;
 }
 
 .item {
-  padding: 0 1rem 1rem 0;
+  padding-bottom: 1rem;
 }
 
 .green {
@@ -59,4 +59,10 @@
   width: 1.75em;
   border-radius: 50%;
   margin: 0 10px;
+}
+
+.submit-button {
+  max-width: 600px;
+  width: 100%;
+  margin: 1rem 0;
 }

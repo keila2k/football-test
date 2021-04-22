@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {TeamI} from '../../dtos/TeamI';
+import {TeamI} from '../../../dtos/TeamI';
 
 @Component({
   selector: 'app-team',
@@ -10,7 +10,7 @@ import {TeamI} from '../../dtos/TeamI';
       </ng-template>
     </span>
     <ng-template #thenBlock>
-      <img class="avatar" [src]=team.logoUrl alt="Desc 1">
+      <img class="avatar" [src]=team.logoUrl alt="">
       <mat-label class="lg-view">{{team.internationalName}}</mat-label>
       <mat-label class="sm-view">{{team.teamCode}}</mat-label>
     </ng-template>

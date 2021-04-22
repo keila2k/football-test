@@ -1,0 +1,49 @@
+<div *ngIf="this.matchScores">
+  <mat-nav-list role="list">
+    <mat-list-item *ngFor="let match of matchScores; let i = index" role="listitem">
+      <div fxLayout="row" fxLayoutAlign="space-between center" fxFlex="100">
+        <div fxLayout="row" fxLayoutAlign="space-between center" fxFlex="80">
+          <div class="left">
+            <img class="avatar" [src]="match.homeTeam.logoUrl" alt="Desc 1">
+            <mat-label class="mat-body lg-view">{{match.homeTeam.internationalName}}</mat-label>
+            <mat-label class="mat-body sm-view">{{match.homeTeam.teamCode}}</mat-label>
+          </div>
+          <table cellspacing="0">
+            <tr>
+              <td>
+                <mat-form-field [floatLabel]="'never'" class="score-form-field">
+                  <input type="number" matInput pattern="\d*" [(ngModel)]="match.homeTeamScore"
+                         [formControl]="scoreFormControls[i].homeTeamFormControl" placeholder="?">
+                  <mat-error *ngIf="scoreFormControls[i].homeTeamFormControl.errors">
+                    Invalid
+                  </mat-error>
+                </mat-form-field>
+              </td>
+              <mat-label>-</mat-label>
+              <td>
+                <mat-form-field [floatLabel]="'never'" class="score-form-field">
+                  <input type="number" matInput pattern="\d*" [(ngModel)]="match.awayTeamScore"
+                         [formControl]="scoreFormControls[i].awayTeamFormControl" placeholder="?">
+                  <mat-error *ngIf="scoreFormControls[i].awayTeamFormControl.errors">
+                    Invalid
+                  </mat-error>
+                </mat-form-field>
+              </td>
+            </tr>
+          </table>
+          <div class="right">
+            <mat-label class="mat-body lg-view">{{match.awayTeam.internationalName}}</mat-label>
+            <mat-label class="mat-body sm-view">{{match.awayTeam.teamCode}}</mat-label>
+            <img class="avatar" [src]="match.awayTeam.logoUrl" alt="Desc 1">
+          </div>
+        </div>
+        <div class="mat-caption">{{match.kickOffTime.dateTime | date: 'dd/MM/yy, HH:mm'}}</div>
+      </div>
+    </mat-list-item>
+  </mat-nav-list>
+  <button class="submit-button" mat-raised-button color="primary"
+          [disabled]="isDisabled()" (click)="onSubmit()">
+    Submit
+  </button>
+</div>
+

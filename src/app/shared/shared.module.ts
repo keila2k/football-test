@@ -15,6 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SpinnerComponent } from './spinner/spinner.component';
+import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 
 const components = [
   ShellComponent, DeleteButtonComponent
@@ -42,9 +43,10 @@ const modules = [
     ...components,
     SpinnerComponent
   ],
-  imports: [
-    ...modules,
-  ],
+    imports: [
+        ...modules,
+        FontAwesomeModule,
+    ],
     exports: [
         ...components,
         ...modules,

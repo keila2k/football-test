@@ -1,19 +1,17 @@
 import {Component, OnInit} from '@angular/core';
-import {MatchDataService} from '../../match-data.service';
+import {MatchDataService} from '../match-data.service';
 import {moveItemInArray} from '@angular/cdk/drag-drop';
 import flatten from 'lodash-es/flatten';
-import map from 'lodash-es/map';
 import every from 'lodash-es/every';
 import {MODE} from '../../../utils/mode';
 import {StepperSelectionEvent} from '@angular/cdk/stepper';
 import {FormControl} from '@angular/forms';
-import {MatchUtils} from '../../../utils/MatchUtils';
 import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
 import {StandingI} from '../../../dtos/StandingI';
-import {Match} from '../../../dtos/Match';
 import {UserPredictionDtoI} from '../../../dtos/UserPredictionDtoI';
 import {GeneralDtoI} from '../../../dtos/GeneralDtoI';
 import {ePrediction} from '../../../dtos/ePrediction';
+import {MatchPrediction} from '../../../dtos/MatchPrediction';
 
 const SNACK_BAR_CONFIG: MatSnackBarConfig = {
   duration: 5 * 1000,
@@ -27,12 +25,12 @@ const SNACK_BAR_CONFIG: MatSnackBarConfig = {
 export class PredictionsPageComponent implements OnInit {
   standings: StandingI[];
   groupStageFormController: FormControl = new FormControl('');
-  knockoutStageFormController: FormControl = new FormControl('');
+  finalsStageFormController: FormControl = new FormControl('');
   mode: MODE;
-  private standingsId: string;
-  knockoutMatches: Match[] = null;
+  finalsMatches: MatchPrediction[] = null;
   isGroupsStageOver = false;
-  isKnockoutsEnabled = false;
+  isFinalsEnabled = false;
+  private userPredictionDto: UserPredictionDtoI;
 
   constructor(private matchDataService: MatchDataService, private _snackBar: MatSnackBar) {
   }
@@ -40,19 +38,22 @@ export class PredictionsPageComponent implements OnInit {
   async ngOnInit() {
     const general: GeneralDtoI = await this.matchDataService.getGeneral();
     this.isGroupsStageOver = !general.isPredictionsEnabled;
-    this.isKnockoutsEnabled = general.isKnockoutsEnabled;
+    this.isFinalsEnabled = general.isKnockoutsEnabled;
 
-    this.setState(this.groupStageFormController, this.isGroupsStageOver);
-    this.setState(this.knockoutStageFormController, this.isKnockoutsEnabled);
+    this.setState(this.groupStageFormController, !this.isGroupsStageOver);
+    this.setState(this.finalsStageFormController, this.isFinalsEnabled);
 
     this.matchDataService.getUserPredictions().subscribe((userPredictionsDTO: UserPredictionDtoI) => {
-      if (userPredictionsDTO) {
-        this.getUserStandings(userPredictionsDTO);
-        this.getUserKnockoutMatches(userPredictionsDTO);
+      if (userPredictionsDTO?._id) {
+        this.userPredictionDto = userPredictionsDTO;
+      }
+      if (userPredictionsDTO?.standings) {
+        this.standings = userPredictionsDTO.standings;
+        this.getUserFinalsMatches(userPredictionsDTO);
         this.mode = MODE.EDIT;
       } else {
-        this.getNewStandings();
-        this.getNewKnockoutMatches();
+        this.getInitialStandings();
+        this.getInitialFinalsMatches();
         this.mode = MODE.NEW;
       }
     });
@@ -60,12 +61,11 @@ export class PredictionsPageComponent implements OnInit {
 
   // =============================  Groups stage =============================
   onGroupStandingsChange({event, standing}) {
-    if (this.isGroupsStageOver) {
-      this.groupStageFormController.markAsDirty();
-      this.setState(this.groupStageFormController, false);
-    }
-    if (this.isKnockoutsEnabled) {
-      this.setState(this.knockoutStageFormController, true);
+    this.groupStageFormController.markAsDirty();
+    this.setState(this.groupStageFormController, false);
+
+    if (this.isFinalsEnabled) {
+      this.setState(this.finalsStageFormController, true);
     }
     const previousIndex = event.previousIndex;
     const currentIndex = event.currentIndex;
@@ -77,30 +77,30 @@ export class PredictionsPageComponent implements OnInit {
     standing.forEach((standingItem, index) => standingItem.rank = index + 1);
   }
 
-// ============================= Knockouts stage =============================
+// ============================= Finals stage =============================
 
-  onKnockoutTeamSelect($event: StandingI) {
-    this.knockoutStageFormController.markAsDirty();
-    this.setState(this.knockoutStageFormController, !this.isAllMatchesFilled());
+  onFinalsTeamSelect($event: StandingI) {
+    this.finalsStageFormController.markAsDirty();
+    this.setState(this.finalsStageFormController, !this.isAllMatchesFilled());
   }
 
   isAllMatchesFilled() {
-    return every(this.knockoutMatches, match => match.selectedTeam !== undefined);
+    return every(this.finalsMatches, match => match.selectedTeam !== undefined);
   }
 
-  private async getUserKnockoutMatches(userPredictionsDTO: UserPredictionDtoI) {
-    if (this.isKnockoutsEnabled) {
-      if (userPredictionsDTO.matches && userPredictionsDTO.matches.length) {
-        this.knockoutMatches = map(userPredictionsDTO.matches, match => new Match(match.team1, match.team2, match.idx, match.selectedTeam));
+  private async getUserFinalsMatches(userPredictionsDTO: UserPredictionDtoI) {
+    if (this.isFinalsEnabled) {
+      if (userPredictionsDTO.finalsMatches) {
+        this.finalsMatches = userPredictionsDTO.finalsMatches;
       } else {
-        await this.getNewKnockoutMatches();
+        await this.getInitialFinalsMatches();
       }
     }
   }
 
-  private async getNewKnockoutMatches() {
-    if (this.isKnockoutsEnabled) {
-      this.knockoutMatches = await this.matchDataService.getInitialKnockoutMatches();
+  private async getInitialFinalsMatches() {
+    if (this.isFinalsEnabled) {
+      this.finalsMatches = await this.matchDataService.getFinalsMatches(ePrediction.INITIAL);
     }
   }
 
@@ -117,9 +117,6 @@ export class PredictionsPageComponent implements OnInit {
   onStepSelectionChange(event: StepperSelectionEvent) {
     if (event.selectedIndex === 1 && this.groupStageFormController.dirty) {
       this.setState(this.groupStageFormController, false);
-      if (this.isKnockoutsEnabled) {
-        this.knockoutMatches = MatchUtils.getMatches(this.standings);
-      }
     }
   }
 
@@ -131,23 +128,21 @@ export class PredictionsPageComponent implements OnInit {
     return this.mode === MODE.EDIT;
   }
 
-  private getUserStandings(userPredictionsDTO: UserPredictionDtoI) {
-    this.standingsId = userPredictionsDTO._id;
-    this.standings = userPredictionsDTO.standings;
-  }
-
-  private async getNewStandings() {
+  private async getInitialStandings() {
     this.standings = await this.matchDataService.getStandings(ePrediction.INITIAL);
   }
 
   onSubmit() {
-    const standings: StandingI[] = flatten(this.standings);
-    if (this.isNewMode()) {
-      this.matchDataService.addUserPredictions(standings, this.knockoutMatches).subscribe(value => {
+    if (this.isEditMode() || this.userPredictionDto) {
+      this.matchDataService.updateUserPredictions(
+        this.standings,
+        this.userPredictionDto.matchScores,
+        this.finalsMatches,
+        this.userPredictionDto._id).subscribe(value => {
         this.onSubmitSucceed();
       });
     } else {
-      this.matchDataService.updateUserPredictions(standings, this.knockoutMatches, this.standingsId).subscribe(value => {
+      this.matchDataService.addUserPredictions(this.standings, null, this.finalsMatches).subscribe(value => {
         this.onSubmitSucceed();
       });
     }
@@ -158,8 +153,8 @@ export class PredictionsPageComponent implements OnInit {
     if (this.isGroupsStageOver) {
       this.setState(this.groupStageFormController, true);
     }
-    if (this.isKnockoutsEnabled) {
-      this.setState(this.knockoutStageFormController, true);
+    if (this.isFinalsEnabled) {
+      this.setState(this.finalsStageFormController, true);
     }
   }
 

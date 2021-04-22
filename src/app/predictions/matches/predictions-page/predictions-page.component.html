@@ -1,0 +1,27 @@
+<!--
+<mat-horizontal-stepper (selectionChange)="onStepSelectionChange($event)" [linear]="true" #stepper>
+  <mat-step [stepControl]="groupStageFormController">
+    <ng-template matStepLabel>Groups stage</ng-template>
+    <app-groups-stage [standings]="standings" (standingsChange)=onGroupStandingsChange($event) [isOver]="isGroupsStageOver">
+    </app-groups-stage>
+    <div fxLayoutAlign="center center">
+      <button *ngIf="isFinalsEnabled" mat-raised-button color="primary" [disabled]="!groupStageFormController.valid" matStepperNext>Next
+      </button>
+    </div>
+  </mat-step>
+  <mat-step *ngIf="isFinalsEnabled" [stepControl]="finalsStageFormController">
+    <ng-template matStepLabel>Knockouts</ng-template>
+    &lt;!&ndash;<app-tournament-bracket *ngIf="standings && finalsMatches" style="width: 100%" [finalsMatches]="finalsMatches"
+                            (teamSelect)="onFinalsTeamSelect($event)"></app-tournament-bracket>&ndash;&gt;
+    <div fxLayoutAlign="center center">
+      <button class="m-5" mat-raised-button matStepperPrevious>Back</button>
+    </div>
+  </mat-step>
+</mat-horizontal-stepper>
+<div fxLayoutAlign="center center">
+  <button class="submit-button" mat-raised-button color="primary"
+          [disabled]="!groupStageFormController.valid" (click)="onSubmit()">
+    Submit
+  </button>
+</div>
+-->

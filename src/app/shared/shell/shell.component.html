@@ -10,6 +10,7 @@
       <a mat-list-item routerLink="/login" (click)="drawer.close()">Login</a>
       <a mat-list-item routerLink="/kanban" (click)="drawer.close()">Kanban Demo</a>
       <a mat-list-item routerLink="/matches" (click)="drawer.close()">All matches</a>
+      <a mat-list-item routerLink="/scores" (click)="drawer.close()">Scores</a>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
@@ -28,10 +29,11 @@
 
       <span class="fill-space"></span>
       <div *ngIf="!(isHandset$ | async)">
-        <a mat-button routerLink="/kanban">🍱 Kanban Demo</a>
-        <a mat-button routerLink="/matches">All matches</a>
-        <a mat-button routerLink="/matches/predictions">Match predictions</a>
-
+<!--        <a mat-button routerLink="/kanban">🍱 Kanban Demo</a>-->
+        <button mat-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+          Predictions
+        </button>
+        <a mat-button routerLink="/scores">Scores</a>
         <a mat-button routerLink="/login" *ngIf="!(afAuth.authState | async)">🔑 Login</a>
         <a mat-button routerLink="/login" *ngIf="afAuth.authState | async as user" >
           <img class="avatar" [src]="user.photoURL || 'assets/default-user.svg'">
@@ -40,27 +42,18 @@
 
       </div>
 
-      <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-        <mat-icon>more_vert</mat-icon>
-      </button>
-
       <mat-menu #menu="matMenu">
-        <a mat-menu-item href="https://fireship.page.link/slack">
-          <i>💬</i>
-          <span>Chat on Slack</span>
+        <a mat-menu-item routerLink="predictions/standings">
+          <i>☰</i>
+          <span>Standings</span>
         </a>
-        <a mat-menu-item href="https://github.com/codediodeio/angular-firestarter">
-          <i>💾</i>
-          <span>Code on Github</span>
+        <a mat-menu-item routerLink="predictions/matches">
+          <i>⚽</i>
+          <span>Matches</span>
         </a>
-        <a mat-menu-item href="https://fireship.io/courses/angular">
-          <i>🔥</i>
-          <span>Full Course on Fireship</span>
-        </a>
-
-        <a mat-menu-item href="https://www.youtube.com/channel/UCsBjURrPoezykLs9EqgamOA">
-          <i>📺</i>
-          <span>Watch on the YouTube</span>
+        <a mat-menu-item routerLink="predictions/finals">
+          <i>🏆</i>
+          <span>Finals</span>
         </a>
       </mat-menu>
     </mat-toolbar>

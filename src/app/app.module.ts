@@ -1,33 +1,27 @@
-import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
-import {environment} from '../environments/environment';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-
-// App Modules
-import {AppComponent} from './app.component';
-import {AppRoutingModule} from './app-routing.module';
-import {HomePageComponent} from './home-page/home-page.component';
-import {SharedModule} from './shared/shared.module';
-import {UserModule} from './user/user.module';
-
-// Firebase imports
-import {AngularFireModule} from '@angular/fire';
-import {AngularFirestoreModule} from '@angular/fire/firestore';
-import {AngularFireAuthModule} from '@angular/fire/auth';
-import {ServiceWorkerModule} from '@angular/service-worker';
+import {GoogleLoginProvider, SocialAuthServiceConfig, SocialLoginModule} from 'angularx-social-login';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
-import {FlexLayoutModule} from '@angular/flex-layout';
-import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
-import {CustomHttpInterceptor} from './interceptors/CustomHttpInterceptor';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatSelectModule} from '@angular/material/select';
+import {CustomHttpInterceptor} from './interceptors/CustomHttpInterceptor';
+import {AngularFireAuthModule} from '@angular/fire/auth';
+import {NgModule} from '@angular/core';
 import {MatStepperModule} from '@angular/material/stepper';
-import {
-  GoogleLoginProvider,
-  SocialLoginModule,
-  SocialAuthService,
-  SocialAuthServiceConfig
-} from 'angularx-social-login';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {BrowserModule} from '@angular/platform-browser';
+import {AppRoutingModule} from './app-routing.module';
+import {SharedModule} from './shared/shared.module';
+import {AppComponent} from './app.component';
+import {AngularFireModule} from '@angular/fire';
+import {ServiceWorkerModule} from '@angular/service-worker';
+import {UserModule} from './user/user.module';
+import {FaIconLibrary, FontAwesomeModule} from '@fortawesome/angular-fontawesome';
+import {FlexLayoutModule} from '@angular/flex-layout';
+import {HomePageComponent} from './home-page/home-page.component';
+import {AngularFirestoreModule} from '@angular/fire/firestore';
+import {environment} from '../environments/environment';
+import {faCheckSquare, fas, faSquare} from '@fortawesome/free-solid-svg-icons';
+import {faStackOverflow} from '@fortawesome/free-brands-svg-icons';
+import {far} from '@fortawesome/free-regular-svg-icons';
 
 @NgModule({
   declarations: [
@@ -72,4 +66,7 @@ import {
   bootstrap: [AppComponent]
 })
 export class AppModule {
+  constructor(private library: FaIconLibrary) {
+    library.addIconPacks(fas, far);
+  }
 }
