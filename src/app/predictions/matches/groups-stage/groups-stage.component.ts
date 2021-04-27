@@ -21,7 +21,7 @@ const SNACK_BAR_CONFIG: MatSnackBarConfig = {
 })
 export class GroupsStageComponent implements OnInit {
   standings: StandingI[] = [];
-  isGroupsStageOver = false;
+  isGroupsStageEnabled = false;
   groupStageFormController: FormControl = new FormControl('');
   mode: MODE;
   private userPredictionDto: UserPredictionDtoI;
@@ -31,8 +31,8 @@ export class GroupsStageComponent implements OnInit {
 
   async ngOnInit() {
     const general: GeneralDtoI = await this.matchDataService.getGeneral();
-    this.isGroupsStageOver = !general.isPredictionsEnabled;
-    FormControlUtils.setState(this.groupStageFormController, !this.isGroupsStageOver);
+    this.isGroupsStageEnabled = general.isPredictionsEnabled;
+    FormControlUtils.setState(this.groupStageFormController, this.isGroupsStageEnabled);
 
     this.matchDataService.getUserPredictions().subscribe(async (userPredictionsDTO: UserPredictionDtoI) => {
       if (userPredictionsDTO?._id) {
@@ -41,6 +41,10 @@ export class GroupsStageComponent implements OnInit {
       if (userPredictionsDTO?.standings) {
         this.standings = userPredictionsDTO.standings;
         this.mode = MODE.EDIT;
+        if (!this.isGroupsStageEnabled) {
+          const finalStandings = await this.matchDataService.getStandings(ePrediction.FINAL);
+          this.updateCorrectStandings(finalStandings);
+        }
       } else {
         this.standings = await this.getInitialStandings();
         this.mode = MODE.NEW;
@@ -87,5 +91,22 @@ export class GroupsStageComponent implements OnInit {
     this._snackBar.open(`${this.isEditMode() ? 'Updated' : 'Created'} successfully`, 'close', SNACK_BAR_CONFIG);
     FormControlUtils.setState(this.groupStageFormController, true);
 
+  }
+
+  private updateCorrectStandings(finalStandings: StandingI[]) {
+    if (finalStandings && this.standings && this.userPredictionDto._id) {
+      finalStandings.forEach(finalStanding => {
+        const userStanding = this.standings.find(standing => standing.group.groupName === finalStanding.group.groupName);
+        for (let i1 = 0; i1 < finalStanding.items.length; i1++) {
+          const finalGroupItem = finalStanding.items[i1];
+          const userGroupItem = userStanding.items[i1];
+          if (finalGroupItem?.team?.internationalName && userGroupItem?.team?.internationalName) {
+            userGroupItem.isCorrect = finalGroupItem?.team?.internationalName === userGroupItem?.team?.internationalName;
+          }
+
+        }
+
+      });
+    }
   }
 }

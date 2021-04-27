@@ -104,10 +104,7 @@ export class TournamentBracketComponent implements OnInit {
     });
 
     for (let i = 0; i < 7; i++) {
-      this.matches[i] = {
-        kickOffTime: undefined, matchNumber: i, clear(teamIndexInNextMatch: number): void {
-        }, homeTeam: undefined, awayTeam: undefined
-      };
+      this.matches[i] = new MatchPrediction();
     }
   }
 

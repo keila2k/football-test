@@ -1,10 +1,11 @@
 import {TeamI} from './TeamI';
-import {ScoreItemI} from './ScoreItemI';
 import {DateTimeI} from './DateTimeI';
+import {eMatchStage} from './eMatchStage';
 
 export interface Match {
   homeTeam: TeamI;
   awayTeam: TeamI;
   matchNumber: number;
   kickOffTime: DateTimeI
+  stage: eMatchStage
 }

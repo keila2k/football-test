@@ -19,8 +19,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {HomePageComponent} from './home-page/home-page.component';
 import {AngularFirestoreModule} from '@angular/fire/firestore';
 import {environment} from '../environments/environment';
-import {faCheckSquare, fas, faSquare} from '@fortawesome/free-solid-svg-icons';
-import {faStackOverflow} from '@fortawesome/free-brands-svg-icons';
+import {fas} from '@fortawesome/free-solid-svg-icons';
 import {far} from '@fortawesome/free-regular-svg-icons';
 
 @NgModule({

@@ -2,7 +2,7 @@
 <mat-horizontal-stepper (selectionChange)="onStepSelectionChange($event)" [linear]="true" #stepper>
   <mat-step [stepControl]="groupStageFormController">
     <ng-template matStepLabel>Groups stage</ng-template>
-    <app-groups-stage [standings]="standings" (standingsChange)=onGroupStandingsChange($event) [isOver]="isGroupsStageOver">
+    <app-groups-stage [standings]="standings" (standingsChange)=onGroupStandingsChange($event) [isOver]="isGroupsStageEnabled">
     </app-groups-stage>
     <div fxLayoutAlign="center center">
       <button *ngIf="isFinalsEnabled" mat-raised-button color="primary" [disabled]="!groupStageFormController.valid" matStepperNext>Next

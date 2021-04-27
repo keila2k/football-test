@@ -5,11 +5,11 @@
          (cdkDropListDropped)="onGroupStandingChange($event, standing.items)">
       <mat-label>{{standing.group.groupName}}</mat-label>
       <div class="example-box" *ngFor="let item of standing.items; let index = index" cdkDrag
-           [cdkDragDisabled]="isGroupsStageOver">
+           [cdkDragDisabled]="!isGroupsStageEnabled">
+        <mat-label>{{index + 1}}</mat-label>
         <img class="avatar" [src]="item.team.logoUrl" alt="Desc 1">
         <mat-label>{{item.team.internationalName}}</mat-label>
-        <i *ngIf="isGroupsStageOver && item.isCorrect" class="fa fa-check-circle green right"> +{{item.points}} </i>
-        <i *ngIf="isGroupsStageOver && !item.isCorrect" class="fa fa-times-circle red right"></i>
+        <span *ngIf="!isGroupsStageEnabled && item.isCorrect !== undefined" class="right">{{item.isCorrect ? '✔️' : '❌'}}</span>
       </div>
     </div>
   </div>

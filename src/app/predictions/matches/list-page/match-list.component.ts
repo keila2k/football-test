@@ -7,6 +7,8 @@ import {every, filter, some} from 'lodash-es';
 import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
 import {MODE} from '../../../utils/mode';
 import {UserPredictionDtoI} from '../../../dtos/UserPredictionDtoI';
+import {GeneralDtoI} from '../../../dtos/GeneralDtoI';
+import {eMatchStage} from '../../../dtos/eMatchStage';
 
 const VALIDATORS = [
   Validators.required,
@@ -23,36 +25,54 @@ const SNACK_BAR_CONFIG: MatSnackBarConfig = {
   styleUrls: ['./match-list.component.scss']
 })
 export class MatchListComponent implements OnInit {
-  matchScores: MatchPredictionI[];
   scoreFormControls: { homeTeamFormControl: FormControl, awayTeamFormControl: FormControl }[] = [];
   MODE: MODE;
   private userPredictionDto: UserPredictionDtoI;
+  matchScores: MatchPredictionI[];
+  private isStandingsEnabled = false;
+  private isFinalsEnabled = false;
 
   constructor(private userService: UserService, private matchDataService: MatchDataService, private _snackBar: MatSnackBar
   ) {
   }
 
   async ngOnInit() {
+    const general: GeneralDtoI = await this.matchDataService.getGeneral();
+    this.isStandingsEnabled = general.isPredictionsEnabled;
+    this.isFinalsEnabled = general.isKnockoutsEnabled;
+
     this.matchDataService.getUserPredictions().subscribe(async userPredictionDto => {
       if (userPredictionDto?._id) {
         this.userPredictionDto = userPredictionDto;
       }
+      let matchScores = [];
       if (userPredictionDto?.matchScores) {
-        this.matchScores = userPredictionDto.matchScores;
+        matchScores = userPredictionDto.matchScores;
         this.MODE = MODE.EDIT;
       } else {
-        const matches = await this.matchDataService.getMatches();
-        if (matches) {
-          this.matchScores = (filter(matches, match => match?.homeTeam && match?.awayTeam) as MatchPredictionI[]);
-        }
+        matchScores = await this.matchDataService.getMatches();
         this.MODE = MODE.NEW;
       }
-      this.scoreFormControls = this.matchScores.map(match =>
-        ({
-          homeTeamFormControl: new FormControl(match.homeTeamScore || '', VALIDATORS),
-          awayTeamFormControl: new FormControl(match.awayTeamScore || '', VALIDATORS)
-        }));
+      if (matchScores) {
+        this.matchScores = (filter(matchScores, match => match?.homeTeam && match?.awayTeam) as MatchPredictionI[]);
+        this.scoreFormControls = this.matchScores.map(match =>
+          ({
+            homeTeamFormControl: new FormControl({
+              value: match.homeTeamScore || '',
+              disabled: this.isMatchPredictionsDisabled(match)
+            }, VALIDATORS),
+            awayTeamFormControl: new FormControl({
+              value: match.awayTeamScore || '',
+              disabled: this.isMatchPredictionsDisabled(match)
+            }, VALIDATORS)
+          }));
+      }
     });
+  }
+
+  private isMatchPredictionsDisabled(matchPrediction: MatchPredictionI) {
+    return matchPrediction.stage === eMatchStage.GROUPS && !this.isStandingsEnabled ||
+      matchPrediction.stage === eMatchStage.FINALS && !this.isFinalsEnabled;
   }
 
   isDisabled(): boolean {
